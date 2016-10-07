@@ -116,26 +116,6 @@ public class FeedAdapter extends ArrayAdapter<IGFeed>{
                     .transform(transformation)
                     .placeholder(R.drawable.photo_placeholder)
                     .into(viewHolder.photo);
-
-            BitmapDrawable drawable = (BitmapDrawable) viewHolder.photo.getDrawable();
-            Bitmap bmp = drawable.getBitmap();
-
-            File sdCardDirectory = Environment.getExternalStorageDirectory();
-            File image = new File(sdCardDirectory, System.currentTimeMillis() + ".png");
-
-            FileOutputStream outStream;
-            try {
-                outStream = new FileOutputStream(image);
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-
-                outStream.flush();
-                outStream.close();
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         else {
             //set video

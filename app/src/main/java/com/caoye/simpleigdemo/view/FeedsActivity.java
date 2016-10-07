@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.caoye.simpleigdemo.ApplicationData;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import okhttp3.Call;
@@ -56,6 +58,16 @@ public class FeedsActivity extends AppCompatActivity {
         adapter = new FeedAdapter(this, feeds);
         lvFeeds = (ListView)findViewById(R.id.lv_feeds);
         lvFeeds.setAdapter(adapter);
+
+        //Item Long Click to save image offline
+        lvFeeds.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ImageView photoToSave = (ImageView) view.findViewById(R.id.iv_photo);
+                saveImage(photoToSave);
+                return true;
+            }
+        });
 
         if(!isNetworkAvailable())
         {
@@ -162,4 +174,22 @@ public class FeedsActivity extends AppCompatActivity {
         return (networkInfo != null && networkInfo.isConnected());
     }
 
+    private void saveImage(ImageView image) {
+        image.setDrawingCacheEnabled(true);
+        image.buildDrawingCache(true);
+        Bitmap bmp=image.getDrawingCache();
+        OutputStream fOut = null;
+
+        try {
+            fOut = new FileOutputStream(Environment.getExternalStorageDirectory() + "/DCIM/" +
+                    System.currentTimeMillis() + ".JPG");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+        image.setDrawingCacheEnabled(false);
+        image.destroyDrawingCache();
+
+        Toast.makeText(this, "Photo saved", Toast.LENGTH_SHORT).show();
+    }
 }
